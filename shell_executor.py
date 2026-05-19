@@ -145,7 +145,20 @@ def execute_shell_task(user_prompt):
         print("\n========== AI INTERPRETATION ==========\n")
 
         print(interpretation)
+        return {
+
+            "command": command,
+
+            "result": interpretation
+        }
 
     except Exception as e:
 
         print(f"\nExecution failed:\n{e}")
+
+        return {
+
+            "command": command,
+
+            "result": str(e)
+        }
