@@ -2,6 +2,8 @@ from models import ask_qwen
 from models import ask_deepseek
 from memory import get_last_action
 from shell_executor import execute_shell_task
+from planner import generate_plan
+from workflow_executor import execute_workflow
 
 from classifier import classify_prompt
 
@@ -21,6 +23,57 @@ def route_prompt(user_prompt):
     # =====================================================
 
     task_type = classify_prompt(user_prompt)
+    # =====================================================
+    # PLANNING DETECTION
+    # =====================================================
+
+    planning_keywords = [
+
+        "scan",
+        "workflow",
+        "steps",
+        "process",
+        "enumerate",
+        "recon",
+        "reconnaissance",
+        "capture handshake",
+        "attack chain",
+        "monitor mode",
+        "wifi attack",
+        "pentest",
+        "penetration test"
+    ]
+
+    if any(
+        keyword in user_prompt.lower()
+        for keyword in planning_keywords
+    ):
+
+        print("\n[Router] Using Task Planner\n")
+
+        plan = generate_plan(user_prompt)
+
+        print("\n========== GENERATED PLAN ==========\n")
+
+        print(plan)
+        choice = input(
+            "\nExecute this workflow? [y/N]: "
+        ).lower()
+
+        if choice == "y":
+
+            execute_workflow(plan)
+
+        create_memory_entry(
+
+            user_prompt=user_prompt,
+
+            task_type="planning",
+
+            result=plan[:500]
+        )
+
+        return
 
     print(f"\n[Classifier] Detected: {task_type}\n")
 

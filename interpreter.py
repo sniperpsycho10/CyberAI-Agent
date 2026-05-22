@@ -3,16 +3,32 @@ from models import ask_qwen
 from prompts import INTERPRETATION_PROMPT
 
 # =========================================================
-# OUTPUT INTERPRETATION
+# INTERPRET COMMAND OUTPUT
 # =========================================================
 
-def interpret_output(command, output_text):
+def interpret_output(
 
-    output_text = output_text[:3000]
+    user_prompt,
+    stdout,
+    stderr
+
+):
+
+    combined_output = f"""
+STDOUT:
+{stdout}
+
+STDERR:
+{stderr}
+"""
 
     prompt = INTERPRETATION_PROMPT.format(
-        command=command,
-        output=output_text
+
+        user_prompt=user_prompt,
+
+        command_output=combined_output
     )
 
-    return ask_qwen(prompt)
+    response = ask_qwen(prompt)
+
+    return response
